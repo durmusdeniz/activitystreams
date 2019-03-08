@@ -17,10 +17,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.Monitor;
+import com.google.common.util.concurrent.*;
 import com.ibm.common.activitystreams.IO;
 import com.ibm.common.activitystreams.Makers;
 import com.ibm.common.activitystreams.TypeValue;
@@ -212,7 +209,7 @@ public final class TypeValueRegistry
           strategy.load(io,receiver);
         }
       });
-    addCallback(
+    Futures.addCallback(
       future, 
       new FutureCallback<Object>() {
         public void onSuccess(Object result) {
@@ -232,7 +229,7 @@ public final class TypeValueRegistry
             monitor.leave();
           }
         }
-      });
+      }, MoreExecutors.directExecutor());
     return future;
   }
   
