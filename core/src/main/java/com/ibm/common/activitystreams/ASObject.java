@@ -1454,12 +1454,30 @@ public class ASObject
      * @return B 
      **/
     public B set(String key, Object value) {
-      if (value == null) 
+      if (value == null){
         return (B)this;
-      if (value instanceof Supplier)
-        map.put(key, ((Supplier<?>)value).get());
-      else
+      }
+
+      if (value instanceof Supplier){
+        try {
+        return value == null ?
+          (B)this : set(key,((Supplier)value).get());
+      } catch (Throwable t) {
+        throw propagate(t);
+      }
+      }else if(value instanceof Callable){
+        try {
+        return value == null ?
+          (B)this :
+          set(key,((Callable<?>)value).call());
+      } catch (Throwable t) {
+        throw propagate(t);
+      }
+      }else{
         map.put(key, value);
+      }
+
+
       return (B)this;
     }
     
@@ -1469,14 +1487,14 @@ public class ASObject
      * @param value Supplier<V>
      * @return B 
      **/
-    public B set(String key, Supplier<?> value) {
-      try {
-        return value == null ?
-          (B)this : set(key,value.get());
-      } catch (Throwable t) {
-        throw propagate(t);
-      }
-    }
+//    public B set(String key, Supplier<?> value) {
+//      try {
+//        return value == null ?
+//          (B)this : set(key,value.get());
+//      } catch (Throwable t) {
+//        throw propagate(t);
+//      }
+//    }
     
     /**
      * Set a property from a given callable
@@ -1484,15 +1502,15 @@ public class ASObject
      * @param value Callable<V>
      * @return B 
      **/
-    public B set(String key, Callable<?> value) {
-      try {
-        return value == null ?
-          (B)this : 
-          set(key,value.call());
-      } catch (Throwable t) {
-        throw propagate(t);
-      }
-    }
+//    public B set(String key, Callable<?> value) {
+//      try {
+//        return value == null ?
+//          (B)this :
+//          set(key,value.call());
+//      } catch (Throwable t) {
+//        throw propagate(t);
+//      }
+//    }
     
     /**
      * Set the scope
